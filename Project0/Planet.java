@@ -35,10 +35,6 @@ public class Planet {
 
 	public double calcForceExertedByX (Planet p) {
 		double fx;
-		if (xxPos >= p.xxPos)
-			fx = calcForceExertedBy(p) * 
-				(xxPos-p.xxPos)/calcDistance(p);
-		else 
 			fx = calcForceExertedBy(p) * 
 				(p.xxPos-xxPos)/calcDistance(p);
 		return fx;
@@ -46,10 +42,6 @@ public class Planet {
 
 	public double calcForceExertedByY (Planet p) {
 		double fy;
-		if (yyPos >= p.yyPos)
-			fy = calcForceExertedBy(p) * 
-				(yyPos-p.yyPos)/calcDistance(p);
-		else 
 			fy = calcForceExertedBy(p) * 
 				(p.yyPos-yyPos)/calcDistance(p);
 		return fy;
@@ -83,6 +75,7 @@ public class Planet {
 	}
 
 	public void draw() {
-		StdDraw.picture(xxPos, yyPos, imgFileName);
+		StdDraw.picture(xxPos, yyPos, 
+			"./images/"+imgFileName);
 	}
 }

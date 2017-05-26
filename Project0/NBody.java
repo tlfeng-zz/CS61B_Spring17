@@ -16,7 +16,7 @@ public class NBody {
 			Planet p = new Planet(in.readDouble(), 
 				in.readDouble(), in.readDouble(), 
 				in.readDouble(), in.readDouble(), 
-				"./images/"+in.readString());
+				in.readString());
 			planets[i-1] = p;
 		}
 		return planets;
@@ -33,20 +33,53 @@ public class NBody {
 		p.draw();
 	}
 
+	public static void animation(Planet[] p, double T, 
+		double dt, double radius) {
+		for (double time = 0; time<T; time+=dt) {
+			double[] xForce = new double[p.length];
+			double[] yForce = new double[p.length];
+			for (int i=0; i<p.length; i++) {
+				xForce[i] = p[i].calcNetForceExertedByX(p);
+				yForce[i] = p[i].calcNetForceExertedByY(p);
+			}
+			for (int i=0; i<p.length; i++) {
+				p[i].update (dt,xForce[i],yForce[i]);
+			}
+
+			drawBackground(radius);
+			for (int i=0; i<p.length; i++)
+				p[i].draw();
+
+			StdDraw.show(10);
+		}
+	}
+
+	public static void playSound(String filename) {
+		StdAudio.play(filename);
+	}
+
+	public static void printState(Planet[] p, double radius) {
+		StdOut.printf("%d\n", p.length);
+		StdOut.printf("%7.2e\n", radius);
+		for (int i=0; i<p.length; i++) 
+			StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n", 
+			p[i].xxPos, p[i].yyPos, p[i].xxVel, p[i].yyVel, 
+			p[i].mass, p[i].imgFileName);
+	}
+
 	public static void main (String[] args) {
 		double T = Double.parseDouble(args[0]);
 		double dt= Double.parseDouble(args[1]);
 		String filename=args[2];
-		double radidus = readRadius (filename);
+		double radius = readRadius (filename);
 		Planet[] planets = readPlanets (filename);
 
 		readRadius(filename);
 		readPlanets(filename);
 
-		drawBackground(2.50e+11);
-		for (int i=0; i<planets.length; i++) {
-			planets[i].draw();
-		}
+		playSound("./audio/2001.mid");
+		animation(planets, T, dt, radius);
+		printState(planets, radius);
 
 	}
 }
