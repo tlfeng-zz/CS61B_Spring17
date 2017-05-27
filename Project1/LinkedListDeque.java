@@ -1,36 +1,41 @@
 public class LinkedListDeque {
     public class IntNode {
         public int item;
-        public IntNode next;
-        public IntNode(int i, IntNode n) {
+        public IntNode next, prev;
+        public IntNode(int i, IntNode n, IntNode p) {
             item = i;
             next = n;
+            prev = p;
         }
     }
 
-    // The first item (if exists) is at sentinel.next
+    /** The first item (if exists) is at sentinel.next */
     private IntNode sentinel;
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new IntNode(63, null);
+        sentinel = new IntNode(63, null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
         size = 0;
     }
 
     public LinkedListDeque(int x) {
-        sentinel = new IntNode(63, null);
-        sentinel.next = new IntNode(x, null);
+        sentinel = new IntNode(63, null, null);
+        sentinel.next = new IntNode(x, sentinel, sentinel);
+        sentinel.prev = sentinel.next;
         size = 1;
     }
 
     /** Adds an item to the front of the list. */
     public void addFirst(int x) {
-        sentinel.next = new IntNode(x, sentinel.next);
+        sentinel.next = new IntNode(x, sentinel.next, sentinel);
         size += 1;
     }
 
     /** Retrieves the front item from the list. */
     public int getFirst() {
+        // When list is empty?
         return sentinel.next.item;
     }
 
@@ -41,19 +46,41 @@ public class LinkedListDeque {
 
     /** Adds an item to the end of the list. */
     public void addLast(int x) {
-        IntNode p = sentinel;
-
-        /* Advance p to the end of the list. */
-        while (p.next != null) {
-            p = p.next;
-        }
-        p.next = new IntNode(x, null);
+        sentinel.prev = new IntNode(x, sentinel.next, sentinel.prev);
+        sentinel.next = sentinel.prev;
+        size += 1;
     }
+
+    public boolean isEmpty() {
+        if (sentinel.next == sentinel)
+            return true;
+        else
+            return false;
+    }
+
+    //public int removeFirst() {
+
+    //}
+
+    //public int removeLast() {
+
+    //}
+
+    //public int get(int index) {
+
+    //}
+
+    //public int getRecursive(int index) {
+
+    //}
 
     /** Crashes when you call addLast on an empty SLList. Fix it. */
     public static void main(String[] args) {
         LinkedListDeque x = new LinkedListDeque();
-        x.addLast(5);
+        //x.addFirst(5);
+        x.addLast(10);
+        x.addLast(15);
         System.out.println(x.getFirst());
+        System.out.println(x.isEmpty());
     }
 }
