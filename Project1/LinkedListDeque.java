@@ -1,8 +1,8 @@
 public class LinkedListDeque {
     public class IntNode {
-        public int item;
-        public IntNode next, prev;
-        public IntNode(int i, IntNode n, IntNode p) {
+        private int item;
+        private IntNode next, prev;
+        private IntNode(int i, IntNode n, IntNode p) {
             item = i;
             next = n;
             prev = p;
@@ -27,60 +27,86 @@ public class LinkedListDeque {
         size = 1;
     }
 
-    /** Adds an item to the front of the list. */
-    public void addFirst(int x) {
-        sentinel.next = new IntNode(x, sentinel.next, sentinel);
-        size += 1;
-    }
-
-    /** Retrieves the front item from the list. */
-    public int getFirst() {
-        // When list is empty?
-        return sentinel.next.item;
-    }
-
     /** Returns the number of items in the list. */
     public int size() {
         return size;
     }
 
-    /** Adds an item to the end of the list. */
-    public void addLast(int x) {
-        sentinel.prev = new IntNode(x, sentinel.next, sentinel.prev);
-        sentinel.next = sentinel.prev;
+    public boolean isEmpty() {
+        return sentinel.next == sentinel;
+    }
+
+    /** Adds an item to the front of the list. */
+    public void addFirst(int x) {
+        IntNode p = new IntNode(x, sentinel.next, sentinel);
+        sentinel.next.prev = p;
+        sentinel.next = p;
+        if (isEmpty())
+            sentinel.prev = p;
         size += 1;
     }
 
-    public boolean isEmpty() {
-        if (sentinel.next == sentinel)
-            return true;
-        else
-            return false;
+    /** Adds an item to the end of the list. */
+    public void addLast(int x) {
+        IntNode p = new IntNode(x, sentinel, sentinel.prev);
+        sentinel.prev.next = p;
+        sentinel.prev = p;
+        if (isEmpty())
+            sentinel.next = p;
+        size += 1;
     }
 
-    //public int removeFirst() {
+    public int removeFirst() {
+        if (isEmpty())
+            return -1;
+        else {
+            sentinel.next = sentinel.next.next;
+            sentinel.next.prev = sentinel;
+            size -= 1;
+            return sentinel.next.item;
+        }
+    }
 
-    //}
+    public int removeLast() {
+        if (isEmpty())
+            return -1;
+        else {
+            sentinel.prev = sentinel.prev.prev;
+            sentinel.prev.next = sentinel;
+            size -= 1;
+            return sentinel.prev.item;
+        }
+    }
 
-    //public int removeLast() {
+    /** Retrieves the front item from the list. */
+    public int get(int index) {
+        IntNode p = sentinel.next;
+        for (int i=0; i<index; i++) {
+            p = p.next;
+        }
+        if (isEmpty())
+            return -1;
+        else
+            return p.item;
+    }
 
-    //}
-
-    //public int get(int index) {
-
-    //}
-
-    //public int getRecursive(int index) {
-
-    //}
+    /*public int getRecursive(int index) {
+        if (index == 0)
+        return sentinel.next.item;
+        else
+            return getRecursive (index-1);
+    }*/
 
     /** Crashes when you call addLast on an empty SLList. Fix it. */
     public static void main(String[] args) {
         LinkedListDeque x = new LinkedListDeque();
-        //x.addFirst(5);
+        x.addFirst(5);
         x.addLast(10);
         x.addLast(15);
-        System.out.println(x.getFirst());
-        System.out.println(x.isEmpty());
+        //x.removeFirst();
+        //x.removeLast();
+        System.out.println(x.get(1));
+        System.out.println(x.getRecursive(1));
+        //System.out.println(x.isEmpty());
     }
 }
