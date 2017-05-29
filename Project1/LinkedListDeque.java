@@ -14,7 +14,7 @@ public class LinkedListDeque {
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new IntNode(63, null, null);
+        sentinel = new IntNode(63, null,null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
@@ -90,12 +90,19 @@ public class LinkedListDeque {
             return p.item;
     }
 
-    /*public int getRecursive(int index) {
+    public int getRecursiveHelper(int index, IntNode p) {
         if (index == 0)
-        return sentinel.next.item;
+            return p.item;
         else
-            return getRecursive (index-1);
-    }*/
+            return getRecursiveHelper (index-1, p.next);
+    }
+
+    public int getRecursive(int index) {
+        if (index > this.size)
+            return -1;
+        else
+            return getRecursiveHelper (index, this.sentinel.next);
+    }
 
     /** Crashes when you call addLast on an empty SLList. Fix it. */
     public static void main(String[] args) {
@@ -105,8 +112,8 @@ public class LinkedListDeque {
         x.addLast(15);
         //x.removeFirst();
         //x.removeLast();
-        System.out.println(x.get(1));
-        System.out.println(x.getRecursive(1));
+        System.out.println(x.get(0));
+        System.out.println(x.getRecursive(0));
         //System.out.println(x.isEmpty());
     }
 }
