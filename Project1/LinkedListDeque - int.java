@@ -1,8 +1,8 @@
-public class LinkedListDeque<LoahNess> {
-    public class StuffNode {
-        private LoahNess item;
-        private StuffNode next, prev;
-        private StuffNode(LoahNess i, StuffNode n, StuffNode p) {
+public class LinkedListDeque {
+    public class IntNode {
+        private int item;
+        private IntNode next, prev;
+        private IntNode(int i, IntNode n, IntNode p) {
             item = i;
             next = n;
             prev = p;
@@ -10,19 +10,19 @@ public class LinkedListDeque<LoahNess> {
     }
 
     /** The first item (if exists) is at sentinel.next */
-    private StuffNode sentinel;
+    private IntNode sentinel;
     private int size;
 
     public LinkedListDeque() {
-        sentinel = new StuffNode(null, null,null);
+        sentinel = new IntNode(63, null,null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
     }
 
-    public LinkedListDeque(LoahNess x) {
-        sentinel = new StuffNode(null, null, null);
-        sentinel.next = new StuffNode(x, sentinel, sentinel);
+    public LinkedListDeque(int x) {
+        sentinel = new IntNode(63, null, null);
+        sentinel.next = new IntNode(x, sentinel, sentinel);
         sentinel.prev = sentinel.next;
         size = 1;
     }
@@ -37,8 +37,8 @@ public class LinkedListDeque<LoahNess> {
     }
 
     /** Adds an item to the front of the list. */
-    public void addFirst(LoahNess x) {
-        StuffNode p = new StuffNode(x, sentinel.next, sentinel);
+    public void addFirst(int x) {
+        IntNode p = new IntNode(x, sentinel.next, sentinel);
         sentinel.next.prev = p;
         sentinel.next = p;
         if (isEmpty())
@@ -47,8 +47,8 @@ public class LinkedListDeque<LoahNess> {
     }
 
     /** Adds an item to the end of the list. */
-    public void addLast(LoahNess x) {
-        StuffNode p = new StuffNode(x, sentinel, sentinel.prev);
+    public void addLast(int x) {
+        IntNode p = new IntNode(x, sentinel, sentinel.prev);
         sentinel.prev.next = p;
         sentinel.prev = p;
         if (isEmpty())
@@ -56,9 +56,9 @@ public class LinkedListDeque<LoahNess> {
         size += 1;
     }
 
-    public LoahNess removeFirst() {
+    public int removeFirst() {
         if (isEmpty())
-            return null;
+            return -1;
         else {
             sentinel.next = sentinel.next.next;
             sentinel.next.prev = sentinel;
@@ -67,9 +67,9 @@ public class LinkedListDeque<LoahNess> {
         }
     }
 
-    public LoahNess removeLast() {
+    public int removeLast() {
         if (isEmpty())
-            return null;
+            return -1;
         else {
             sentinel.prev = sentinel.prev.prev;
             sentinel.prev.next = sentinel;
@@ -79,34 +79,34 @@ public class LinkedListDeque<LoahNess> {
     }
 
     /** Retrieves the front item from the list. */
-    public LoahNess get(int index) {
-        StuffNode p = sentinel.next;
+    public int get(int index) {
+        IntNode p = sentinel.next;
         for (int i=0; i<index; i++) {
             p = p.next;
         }
         if (isEmpty())
-            return null;
+            return -1;
         else
             return p.item;
     }
 
-    public LoahNess getRecursiveHelper(int index, StuffNode p) {
+    public int getRecursiveHelper(int index, IntNode p) {
         if (index == 0)
             return p.item;
         else
             return getRecursiveHelper (index-1, p.next);
     }
 
-    public LoahNess getRecursive(int index) {
+    public int getRecursive(int index) {
         if (index > this.size)
-            return null;
+            return -1;
         else
             return getRecursiveHelper (index, this.sentinel.next);
     }
 
     /** Crashes when you call addLast on an empty SLList. Fix it. */
     public static void main(String[] args) {
-        LinkedListDeque<Integer> x = new LinkedListDeque<>();
+        LinkedListDeque x = new LinkedListDeque();
         x.addFirst(5);
         x.addLast(10);
         x.addLast(15);
