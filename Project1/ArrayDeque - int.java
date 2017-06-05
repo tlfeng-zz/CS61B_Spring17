@@ -86,6 +86,7 @@ public class ArrayDeque {
             System.out.print(items[index]+" ");
             index = plusOne(index);
         }
+        System.out.print("\n");
     }
 
     public int removeFirst() {
@@ -106,6 +107,13 @@ public class ArrayDeque {
     public int removeLast() {
         nextLast = minusOne(nextFirst);
         size --;
+
+        // optimize memory
+        double usageFactor = 0.25;
+        if (items.length>=16 &&
+                (double)size()/items.length < usageFactor)
+            items = resize("shrink");
+
         return items[minusOne(nextLast)];
     }
 
@@ -144,19 +152,8 @@ public class ArrayDeque {
     public static void main(String[] args) {
         ArrayDeque x = new ArrayDeque();
         x.addFirst(3);
-        x.addFirst(6);
         x.addLast(2);
-        x.addLast(4);
-        x.addLast(5);
-        x.addLast(6);
-        x.addLast(7);
-        x.addLast(8);
-        x.addFirst(9);
-        x.removeFirst();x.removeFirst();x.removeFirst();
-        x.removeFirst();x.removeFirst();x.removeFirst();
-        x.removeFirst();
-        //x.get(2);
-        System.out.println(x.isFull());
-
+        x.removeLast();
+        x.printDeque();
     }
 } 
