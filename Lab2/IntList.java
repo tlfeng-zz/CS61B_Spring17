@@ -88,10 +88,18 @@ public class IntList {
         return A;
     }
 
+    public static IntList dcatenateReHelper(IntList p) {
+        if (p.rest == null)
+            return p;
+        else
+        return dcatenateReHelper(p.rest);
+    }
+
     public static IntList dcatenateRe(IntList A, IntList B) {
-        if (A == null) {
-            return A.rest =
-        }
+        IntList p =A;
+        p = dcatenateReHelper(p);
+        p.rest = B;
+        return A;
     }
     /**
      * Returns a list consisting of the elements of A followed by the
