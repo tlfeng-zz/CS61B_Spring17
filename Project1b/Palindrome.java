@@ -21,21 +21,34 @@ public class Palindrome {
     }
 
     public static boolean isPalindrome(String word) {
-        boolean flag = true;
-        for (int i = 0; i < word.length() / 2 + 1; i++) {
+        for (int i = 0; i < word.length() / 2; i++) {
             if ( word.charAt(i) != word.charAt(word.length()-i-1) )
-                flag = false;
+                return false;
         }
-        return flag;
+        // The condition of one character
+        if (word.length() == 1)
+            return false;
+
+        return true;
     }
 
     public static boolean isPalindrome(String word, CharacterComparator cc) {
+        for (int i = 0; i < word.length() / 2; i++) {
+            if (!cc.equalChars(word.charAt(i), word.charAt(word.length() - i - 1)))
+                return false;
+        }
+        // The condition of one character
+        if (word.length() == 1)
+            return false;
 
+        return true;
     }
 
     public static void main(String[] args) {
         Deque<Character> deque = wordToDeque("abcba");
         deque.printDeque();
         System.out.println(isPalindrome("abcba"));
+        CharacterComparator OffBy1 = new OffByOne();
+        System.out.println(isPalindrome("adcbb",OffBy1));
     }
 }
