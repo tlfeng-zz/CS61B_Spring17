@@ -1,5 +1,6 @@
 package db;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +20,6 @@ public class Table {
         colList = new ArrayList<>();
         colNameList = Arrays.asList(nameArr);
         colTypeList = Arrays.asList(typeArr);
-
     }
 
     public void addRow(Row row) {
@@ -79,18 +79,15 @@ public class Table {
             // nature join
             for(int i=0; i<rowNum; i++) {
                 for (int j=0; j<t2.rowNum; j++) {
-                    int[] newRowArr = new int[newNameArr.length];
-                    int newRowArrIndex = 0;
+                    List<Object> newRowEList = new ArrayList<>();
                     for(int k=0; k<rowList.get(i).rowEList.size(); k++) {
-                        newRowArr[newRowArrIndex] = rowList.get(i).rowEList.get(k);
-                        newRowArrIndex++;
+                        newRowEList.add(rowList.get(i).rowEList.get(k));
                     }
                     for(int l=0; l<t2.rowList.get(j).rowEList.size(); l++) {
-                        newRowArr[newRowArrIndex] = t2.rowList.get(j).rowEList.get(l);
-                        newRowArrIndex++;
+                        newRowEList.add(t2.rowList.get(j).rowEList.get(l));
                     }
                     // add row to table
-                    Row newRow = new Row(newRowArr);
+                    Row newRow = new Row(newRowEList);
                     resultTbl.addRow(newRow);
                 }
 
@@ -170,12 +167,10 @@ public class Table {
                 // start join
                 if ( matchSign == true ) {
                     // build new joined row
-                    int[] newRowArr = new int[newNameArr.length];
-                    int newRowArrIndex = 0;
+                    List<Object> newRowEList = new ArrayList<>();
                     // put common column in
                     for(int k=0; k<commonNameList.size(); k++) {
-                        newRowArr[newRowArrIndex] = rowList.get(i).rowEList.get(commonColIndex1[k]);
-                        newRowArrIndex++;
+                        newRowEList.add(rowList.get(i).rowEList.get(commonColIndex1[k]));
                     }
                     // put other in table1
                     for (int l = 0; l < colNum; l++) {
@@ -186,8 +181,7 @@ public class Table {
                             }
                         }
                             if (commonSign == false) {
-                                newRowArr[newRowArrIndex] = rowList.get(i).rowEList.get(l);
-                                newRowArrIndex++;
+                                newRowEList.add(rowList.get(i).rowEList.get(l));
                             }
                     }
                     // put other in table2
@@ -199,12 +193,11 @@ public class Table {
                             }
                         }
                             if (commonSign == false) {
-                                newRowArr[newRowArrIndex] = t2.rowList.get(j).rowEList.get(l);
-                                newRowArrIndex++;
+                                newRowEList.add(t2.rowList.get(j).rowEList.get(l));
                             }
                     }
 
-                    Row newRow = new Row(newRowArr);
+                    Row newRow = new Row(newRowEList);
                     resultTbl.addRow(newRow);
                 }
             }
@@ -212,13 +205,4 @@ public class Table {
         return resultTbl;
     }
 
-    public void print() {
-        for(int i=0; i<colNameList.size(); i++) {
-            System.out.print(colNameList.get(i)+" ");
-            System.out.print(colTypeList.get(i));
-            if (i<colNameList.size()-1)
-                System.out.print(",");
-        }
-        System.out.println();
-    }
 }

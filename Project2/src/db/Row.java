@@ -1,18 +1,13 @@
 package db;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Row {
-    List<Integer> rowEList;
+public class Row<T extends Comparable> {
+    List<T> rowEList;
 
-    public Row(int[] rowArr) {
-        rowEList = new ArrayList<>();
-        for(int e: rowArr) {
-            rowEList.add(e);
-        }
-        //rowEList = Arrays.asList(rowArr);
+    public Row(List<T> rowEList) {
+        this.rowEList = new ArrayList<>();
+        this.rowEList = rowEList;
     }
 }

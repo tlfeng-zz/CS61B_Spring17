@@ -9,13 +9,15 @@ public class DbTset {
     String[] colName2 = {"X","Z"};
     //String[] colName2 = {"A","B"};
     String[] colType1 = {"int","int"};
-    String[] colType2 = {"int","int"};*/
+    String[] colType2 = {"int","int"};
+
     String[] colName1 = {"X","Y","Z"};
     String[] colName2 = {"X","Y","W"};
     String[] colType1 = {"int","int","int"};
     String[] colType2 = {"int","int","int"};
+
     Table t1 = new Table(colName1, colType1);
-    Table t2 = new Table(colName2, colType2);
+    Table t2 = new Table(colName2, colType2);*/
 
 /*    @Before
     public void init(){
@@ -40,7 +42,7 @@ public class DbTset {
         t2.addRow(r);
     }*/
 
-    @Before
+/*    @Before
     public void init2(){
         int[] rowArr1 = {2,5,3};
         int[] rowArr2 = {8,3,6};
@@ -55,16 +57,26 @@ public class DbTset {
         t2.addRow(r);
         r = new Row(rowArr5);
         t2.addRow(r);
+    }*/
+
+    Table t1 = null;
+    Table t2 = null;
+
+    @Before
+    public void init() {
+        Table t1 = DataIO.load("tbl1.tbl");
+        Table t2 = DataIO.load("tbl2.tbl");
     }
 
     @Test
     public void testAddRow() {
+        Table t2 = DataIO.load("tbl2.tbl");
         assertEquals(9, (int)t2.rowList.get(1).rowEList.get(1));
     }
     @Test
     public void testJoin1() {
         Table t3 = t1.join(t2);
-        //assertEquals(9, (int)t3.rowList.get(1).rowEList.get(2));
-        assertEquals(3, (int)t3.rowList.get(0).rowEList.get(2));
+        assertEquals(9, (int)t3.rowList.get(1).rowEList.get(2));
+        //assertEquals(3, (int)t3.rowList.get(0).rowEList.get(2));
     }
 }
