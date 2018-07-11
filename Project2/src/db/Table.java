@@ -23,6 +23,13 @@ public class Table {
     }
 
     public void addRow(Row row) {
+        // initialize colNum
+        if(colNum == 0) {
+            colNum = row.rowEList.size();
+            for(int i=0; i<colNum; i++)
+                colList.add(new Column());
+        }
+
         // Add row to rowList
         rowList.add(row);
         // Add row elements to column;
@@ -34,7 +41,7 @@ public class Table {
         rowNum++;
     }
 
-    public void join(Table t2) {
+    public Table join(Table t2) {
         // find common column name
         // create list to storage the name
         List<String> commonNameList = new ArrayList<>();
@@ -45,37 +52,54 @@ public class Table {
                 }
             }
         }
-        // find the same elements in the common column pair
-        // assume only one common column now
-        Column col1 = null;
-        Column col2 = null;
-        for(int i=0; i<colNameList.size(); i++) {
-            if( colNameList.get(i).equals(commonNameList.get(0)) ) {
-                // locate the column
-                col1 = colList.get(i);
-            }
-            if( t2.colNameList.get(i).equals(commonNameList.get(0)) ) {
-                // locate the column
-                col2 = t2.colList.get(i);
-            }
-        }
-
-        // create list to storage the same element
-        List<Integer> commonEList = new ArrayList<>();
-        for(int i=0; i<col1.colEList.size(); i++) {
-            for(int j=0; i<col2.colEList.size(); j++) {
-                if ( col1.colEList.get(i).equals(col2.colEList.get(j)) ) {
-                    commonEList.add( col1.colEList.get(i) );
-                }
-            }
-        }
 
         // create new table
         int newColNum = colNameList.size() + t2.colNameList.size() - commonNameList.size();
         String[] newNameArr = new String[newColNum];
         String[] newTypeArr = new String[newColNum];
 
+        // when no common columns,
+        // the result of the join is the cartesian product of the two tables
+        if ( commonNameList.size() == 0) {
+            // add name to colNameList
+            for (int i=0; i<colNameList.size(); i++) {
+                newNameArr[i] = colNameList.get(i);
+            }
+            int startIndex = colNameList.size();
+            for (int i=startIndex; i<startIndex+t2.colNameList.size(); i++) {
+                newNameArr[i] = t2.colNameList.get(i-startIndex);
+            }
+
+            // add column types
+            for (int i=0; i<newColNum; i++) {
+                newTypeArr[i] = "int";
+            }
+            // create new table
+            Table resultTbl = new Table(newNameArr, newTypeArr);
+            // nature join
+            for(int i=0; i<rowNum; i++) {
+                for (int j=0; j<t2.rowNum; j++) {
+                    int[] newRowArr = new int[newNameArr.length];
+                    int newRowArrIndex = 0;
+                    for(int k=0; k<rowList.get(i).rowEList.size(); k++) {
+                        newRowArr[newRowArrIndex] = rowList.get(i).rowEList.get(k);
+                        newRowArrIndex++;
+                    }
+                    for(int l=0; l<t2.rowList.get(j).rowEList.size(); l++) {
+                        newRowArr[newRowArrIndex] = t2.rowList.get(j).rowEList.get(l);
+                        newRowArrIndex++;
+                    }
+                    // add row to table
+                    Row newRow = new Row(newRowArr);
+                    resultTbl.addRow(newRow);
+                }
+
+            }
+            return resultTbl;
+        }
+
         // add new column names
+        // add common names
         for (int i=0; i<commonNameList.size(); i++) {
             newNameArr[i] = commonNameList.get(i);
         }
@@ -91,6 +115,7 @@ public class Table {
             }
             if (flag == false) {
                 newNameArr[newNameindex] = name;
+                newNameindex++;
             }
 
         }
@@ -103,15 +128,97 @@ public class Table {
             }
             if (flag == false) {
                 newNameArr[newNameindex] = name;
+                newNameindex++;
             }
 
         }
-
+        // add column types
         for (int i=0; i<newColNum; i++) {
             newTypeArr[i] = "int";
         }
 
-        //Table result = new Table();
+        Table resultTbl = new Table(newNameArr, newTypeArr);
 
+        // record the index of the common column in each db;
+        int[] commonColIndex1 = new int[commonNameList.size()];
+        int[] commonColIndex2 = new int[commonNameList.size()];
+        for(int i=0; i<commonNameList.size(); i++) {
+            for(int j=0; j<colNameList.size(); j++) {
+                if (commonNameList.get(i).equals(colNameList.get(j)))
+                    commonColIndex1[i] = j;
+            }
+        }
+        for(int i=0; i<commonNameList.size(); i++) {
+            for(int j=0; j<t2.colNameList.size(); j++) {
+                if (commonNameList.get(i).equals(t2.colNameList.get(j)))
+                    commonColIndex2[i] = j;
+            }
+        }
+
+        // nature join -- nested loop join
+        for(int i=0; i<rowNum; i++) {
+            for (int j=0; j<t2.rowNum; j++) {
+                // compare the elements in the specific column
+                boolean matchSign = true;
+                for(int k=0; k<commonNameList.size(); k++) {
+                    // match the join condition
+                    if (! rowList.get(i).rowEList.get(commonColIndex1[k])
+                            .equals(t2.rowList.get(j).rowEList.get(commonColIndex2[k]))) {
+                        matchSign = false;
+                    }
+                }
+                // start join
+                if ( matchSign == true ) {
+                    // build new joined row
+                    int[] newRowArr = new int[newNameArr.length];
+                    int newRowArrIndex = 0;
+                    // put common column in
+                    for(int k=0; k<commonNameList.size(); k++) {
+                        newRowArr[newRowArrIndex] = rowList.get(i).rowEList.get(commonColIndex1[k]);
+                        newRowArrIndex++;
+                    }
+                    // put other in table1
+                    for (int l = 0; l < colNum; l++) {
+                        boolean commonSign = false;
+                        for(int k=0; k<commonNameList.size(); k++) {
+                            if (l == commonColIndex1[k]) {
+                                commonSign = true;
+                            }
+                        }
+                            if (commonSign == false) {
+                                newRowArr[newRowArrIndex] = rowList.get(i).rowEList.get(l);
+                                newRowArrIndex++;
+                            }
+                    }
+                    // put other in table2
+                    for (int l = 0; l < colNum; l++) {
+                        boolean commonSign = false;
+                        for(int k=0; k<commonNameList.size(); k++) {
+                            if (l == commonColIndex2[k]) {
+                                commonSign = true;
+                            }
+                        }
+                            if (commonSign == false) {
+                                newRowArr[newRowArrIndex] = t2.rowList.get(j).rowEList.get(l);
+                                newRowArrIndex++;
+                            }
+                    }
+
+                    Row newRow = new Row(newRowArr);
+                    resultTbl.addRow(newRow);
+                }
+            }
+        }
+        return resultTbl;
+    }
+
+    public void print() {
+        for(int i=0; i<colNameList.size(); i++) {
+            System.out.print(colNameList.get(i)+" ");
+            System.out.print(colTypeList.get(i));
+            if (i<colNameList.size()-1)
+                System.out.print(",");
+        }
+        System.out.println();
     }
 }
