@@ -14,8 +14,8 @@ public class DataIO<T> {
         StringBuilder sb = new StringBuilder();
         // print the definition
         for(int i=0; i<tbl.colNum; i++) {
-            sb.append(tbl.colNameList.get(i)+" ");
-            sb.append(tbl.colTypeList.get(i));
+            sb.append(tbl.colList.get(i).getName()+" ");
+            sb.append(tbl.colList.get(i).getType());
             if (i<tbl.colNum-1)
                 sb.append(",");
         }
@@ -78,16 +78,16 @@ public class DataIO<T> {
             typeArr[i] = colDefArr[i].split(" ")[1];
         }
         // create new table
-        Table tbl = new Table(nameArr,typeArr);
+        Table tbl = new Table("");
 
         // parse the content
         for (String tblRowStr: tblRowStrArr) {
             //System.out.println(tblRowStr);
             String[] rowArr = tblRowStr.split(",");
             // change type
-            List<Integer> rowEList = new ArrayList<>();
+            List<Object> rowEList = new ArrayList<>();
             for(int i=0; i<rowArr.length; i++) {
-                rowEList.add(Integer.parseInt(rowArr[i]));
+                rowEList.add(rowArr[i]);
             }
             Row row = new Row(rowEList);
             // add row to table

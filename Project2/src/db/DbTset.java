@@ -62,21 +62,17 @@ public class DbTset {
     Table t1 = null;
     Table t2 = null;
 
-    @Before
-    public void init() {
-        Table t1 = DataIO.load("tbl1.tbl");
-        Table t2 = DataIO.load("tbl2.tbl");
-    }
-
     @Test
     public void testAddRow() {
         Table t2 = DataIO.load("tbl2.tbl");
-        assertEquals(9, (int)t2.rowList.get(1).rowEList.get(1));
+        assertEquals(9, t2.rowList.get(1).rowEList.get(1));
     }
     @Test
     public void testJoin1() {
+        Table t1 = DataIO.load("tbl1.tbl");
+        Table t2 = DataIO.load("tbl2.tbl");
         Table t3 = t1.join(t2);
-        assertEquals(9, (int)t3.rowList.get(1).rowEList.get(2));
+        assertEquals(9, t3.rowList.get(1).rowEList.get(2));
         //assertEquals(3, (int)t3.rowList.get(0).rowEList.get(2));
     }
 }

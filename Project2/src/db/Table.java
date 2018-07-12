@@ -6,23 +6,21 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Table {
+    String name;
     int rowNum;
     int colNum;
+
     List<Row> rowList;
     List<Column> colList;
-    List<String> colNameList;
-    List<String> colTypeList;
 
-    public Table(String[] nameArr, String[] typeArr) {
+    public Table(String name) {
         rowNum = 0;
         colNum = 0;
         rowList = new ArrayList<>();
         colList = new ArrayList<>();
-        colNameList = Arrays.asList(nameArr);
-        colTypeList = Arrays.asList(typeArr);
     }
 
-    public void addRow(Row row) {
+    public <T extends Comparable> void addRow(Row row) {
         // initialize colNum
         if(colNum == 0) {
             colNum = row.rowEList.size();
@@ -34,27 +32,27 @@ public class Table {
         rowList.add(row);
         // Add row elements to column;
         for(int i=0; i<colList.size(); i++) {
-            int rowElement = (int)row.rowEList.get(i);
-            colList.get(i).colEList.add(rowElement);
+            T rowElement = (T)row.rowEList.get(i);
+            colList.get(i).getColEList().add(rowElement);
         }
 
         rowNum++;
     }
 
-    public Table join(Table t2) {
+    public <T extends Comparable> Table join(Table t2) {
         // find common column name
         // create list to storage the name
         List<String> commonNameList = new ArrayList<>();
-        for(int i=0; i<colNameList.size(); i++) {
-            for(int j=0; j<t2.colNameList.size(); j++) {
-                if( colNameList.get(i).equals(t2.colNameList.get(j)) ) {
-                    commonNameList.add( colNameList.get(i) );
+        for(int i=0; i<colList.size(); i++) {
+            for(int j=0; j<t2.colList.size(); j++) {
+                if( colList.get(i).getName().equals(t2.colList.get(j).getName()) ) {
+                    commonNameList.add( colList.get(i).getName() );
                 }
             }
         }
 
         // create new table
-        int newColNum = colNameList.size() + t2.colNameList.size() - commonNameList.size();
+        int newColNum = colList.size() + t2.colList.size() - commonNameList.size();
         String[] newNameArr = new String[newColNum];
         String[] newTypeArr = new String[newColNum];
 
@@ -62,12 +60,12 @@ public class Table {
         // the result of the join is the cartesian product of the two tables
         if ( commonNameList.size() == 0) {
             // add name to colNameList
-            for (int i=0; i<colNameList.size(); i++) {
-                newNameArr[i] = colNameList.get(i);
+            for (int i=0; i<colList.size(); i++) {
+                newNameArr[i] = colList.get(i).getName();
             }
-            int startIndex = colNameList.size();
-            for (int i=startIndex; i<startIndex+t2.colNameList.size(); i++) {
-                newNameArr[i] = t2.colNameList.get(i-startIndex);
+            int startIndex = colList.size();
+            for (int i=startIndex; i<startIndex+t2.colList.size(); i++) {
+                newNameArr[i] = t2.colList.get(i-startIndex).getName();
             }
 
             // add column types
@@ -75,16 +73,16 @@ public class Table {
                 newTypeArr[i] = "int";
             }
             // create new table
-            Table resultTbl = new Table(newNameArr, newTypeArr);
+            Table resultTbl = new Table("");
             // nature join
             for(int i=0; i<rowNum; i++) {
                 for (int j=0; j<t2.rowNum; j++) {
-                    List<Object> newRowEList = new ArrayList<>();
+                    List<T> newRowEList = new ArrayList<>();
                     for(int k=0; k<rowList.get(i).rowEList.size(); k++) {
-                        newRowEList.add(rowList.get(i).rowEList.get(k));
+                        newRowEList.add((T)rowList.get(i).rowEList.get(k));
                     }
                     for(int l=0; l<t2.rowList.get(j).rowEList.size(); l++) {
-                        newRowEList.add(t2.rowList.get(j).rowEList.get(l));
+                        newRowEList.add((T)t2.rowList.get(j).rowEList.get(l));
                     }
                     // add row to table
                     Row newRow = new Row(newRowEList);
@@ -95,62 +93,61 @@ public class Table {
             return resultTbl;
         }
 
-        // add new column names
-        // add common names
-        for (int i=0; i<commonNameList.size(); i++) {
-            newNameArr[i] = commonNameList.get(i);
-        }
-        int newNameindex = commonNameList.size();
-
-        // add the rest names
-        for (String name: colNameList) {
-            boolean flag = false;
-            for (String commonName: commonNameList) {
-                if (name.equals(commonName)) {
-                    flag = true;
-                }
-            }
-            if (flag == false) {
-                newNameArr[newNameindex] = name;
-                newNameindex++;
-            }
-
-        }
-        for (String name: t2.colNameList) {
-            boolean flag = false;
-            for (String commonName: commonNameList) {
-                if (name.equals(commonName)) {
-                    flag = true;
-                }
-            }
-            if (flag == false) {
-                newNameArr[newNameindex] = name;
-                newNameindex++;
-            }
-
-        }
-        // add column types
-        for (int i=0; i<newColNum; i++) {
-            newTypeArr[i] = "int";
-        }
-
-        Table resultTbl = new Table(newNameArr, newTypeArr);
-
         // record the index of the common column in each db;
         int[] commonColIndex1 = new int[commonNameList.size()];
         int[] commonColIndex2 = new int[commonNameList.size()];
         for(int i=0; i<commonNameList.size(); i++) {
-            for(int j=0; j<colNameList.size(); j++) {
-                if (commonNameList.get(i).equals(colNameList.get(j)))
+            for(int j=0; j<colList.size(); j++) {
+                if (commonNameList.get(i).equals(colList.get(j).getName()))
                     commonColIndex1[i] = j;
             }
         }
         for(int i=0; i<commonNameList.size(); i++) {
-            for(int j=0; j<t2.colNameList.size(); j++) {
-                if (commonNameList.get(i).equals(t2.colNameList.get(j)))
+            for(int j=0; j<t2.colList.size(); j++) {
+                if (commonNameList.get(i).equals(t2.colList.get(j).getName()))
                     commonColIndex2[i] = j;
             }
         }
+
+        // add new column names and types
+        // add common names and types
+        for (int i=0; i<commonNameList.size(); i++) {
+            newNameArr[i] = commonNameList.get(i);
+            newTypeArr[i] = colList.get(commonColIndex1[i]).getType();
+        }
+        int newNameindex = commonNameList.size();
+
+        // add the rest names and types
+        for (Column col: colList) {
+            boolean flag = false;
+            for (String commonName: commonNameList) {
+                if (col.getName().equals(commonName)) {
+                    flag = true;
+                }
+            }
+            if (flag == false) {
+                newNameArr[newNameindex] = col.getName();
+                newTypeArr[newNameindex] = col.getType();
+                newNameindex++;
+            }
+
+        }
+        for (Column col: t2.colList) {
+            boolean flag = false;
+            for (String commonName: commonNameList) {
+                if (col.getName().equals(commonName)) {
+                    flag = true;
+                }
+            }
+            if (flag == false) {
+                newNameArr[newNameindex] = col.getName();
+                newTypeArr[newNameindex] = col.getType();
+                newNameindex++;
+            }
+
+        }
+
+        Table resultTbl = new Table("");
 
         // nature join -- nested loop join
         for(int i=0; i<rowNum; i++) {
