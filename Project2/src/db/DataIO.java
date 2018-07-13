@@ -13,18 +13,18 @@ public class DataIO<T> {
         // Stringbuilder
         StringBuilder sb = new StringBuilder();
         // print the definition
-        for(int i=0; i<tbl.colNum; i++) {
-            sb.append(tbl.colList.get(i).getName()+" ");
-            sb.append(tbl.colList.get(i).getType());
-            if (i<tbl.colNum-1)
+        for(int i=0; i<tbl.getColNum(); i++) {
+            sb.append(tbl.getColList().get(i).getName()+" ");
+            sb.append(tbl.getColList().get(i).getType());
+            if (i<tbl.getColNum()-1)
                 sb.append(",");
         }
         sb.append("\n");
         // print the content
-        for(int i=0; i<tbl.rowNum; i++) {
-            for(int j=0; j<tbl.colNum; j++) {
-                sb.append(tbl.rowList.get(i).rowEList.get(j));
-                if (j<tbl.colNum-1)
+        for(int i=0; i<tbl.getRowNum(); i++) {
+            for(int j=0; j<tbl.getColNum(); j++) {
+                sb.append(tbl.getRowList().get(i).rowEList.get(j));
+                if (j<tbl.getColNum()-1)
                     sb.append(",");
             }
             sb.append("\n");
@@ -38,7 +38,7 @@ public class DataIO<T> {
         List<String> tblStrList = new ArrayList<>();
 
         // read file
-        File file = new File("/Users/ftl/"+fileName);
+        File file = new File("/Users/ftl/"+fileName+".tbl");
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
@@ -78,16 +78,27 @@ public class DataIO<T> {
             typeArr[i] = colDefArr[i].split(" ")[1];
         }
         // create new table
-        Table tbl = new Table("");
+        Table tbl = new Table(fileName);
+        // set column name and type
+        Column col;
+        for(int i=0; i<nameArr.length; i++) {
+            col = new Column(nameArr[i], typeArr[i]);
+            tbl.getColList().add(col);
+            tbl.setColNum(tbl.getColNum()+1);
+        }
 
         // parse the content
         for (String tblRowStr: tblRowStrArr) {
-            //System.out.println(tblRowStr);
             String[] rowArr = tblRowStr.split(",");
-            // change type
             List<Object> rowEList = new ArrayList<>();
             for(int i=0; i<rowArr.length; i++) {
-                rowEList.add(rowArr[i]);
+                // change to right type
+                if (typeArr[i].equals("int"))
+                    rowEList.add(Integer.parseInt(rowArr[i]));
+                else if(typeArr[i].equals("float"))
+                    rowEList.add(Float.parseFloat(rowArr[i]));
+                else if(typeArr[i].equals("string"))
+                    rowEList.add(rowArr[i]);
             }
             Row row = new Row(rowEList);
             // add row to table

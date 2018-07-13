@@ -6,18 +6,58 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Table {
-    String name;
-    int rowNum;
-    int colNum;
+    private String name;
+    private int rowNum;
+    private int colNum;
 
-    List<Row> rowList;
-    List<Column> colList;
+    private List<Row> rowList;
+    private List<Column> colList;
 
     public Table(String name) {
         rowNum = 0;
         colNum = 0;
         rowList = new ArrayList<>();
         colList = new ArrayList<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getRowNum() {
+        return rowNum;
+    }
+
+    public void setRowNum(int rowNum) {
+        this.rowNum = rowNum;
+    }
+
+    public int getColNum() {
+        return colNum;
+    }
+
+    public void setColNum(int colNum) {
+        this.colNum = colNum;
+    }
+
+    public List<Row> getRowList() {
+        return rowList;
+    }
+
+    public void setRowList(List<Row> rowList) {
+        this.rowList = rowList;
+    }
+
+    public List<Column> getColList() {
+        return colList;
+    }
+
+    public void setColList(List<Column> colList) {
+        this.colList = colList;
     }
 
     public <T extends Comparable> void addRow(Row row) {
@@ -32,7 +72,7 @@ public class Table {
         rowList.add(row);
         // Add row elements to column;
         for(int i=0; i<colList.size(); i++) {
-            T rowElement = (T)row.rowEList.get(i);
+            T rowElement = (T)row.rowEList.get(row.rowEList.size()-1);
             colList.get(i).getColEList().add(rowElement);
         }
 

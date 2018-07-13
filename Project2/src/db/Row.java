@@ -10,4 +10,12 @@ public class Row<T extends Comparable> {
         this.rowEList = new ArrayList<>();
         this.rowEList = rowEList;
     }
+
+    public List<T> getRowEList() {
+        return rowEList;
+    }
+
+    public void setRowEList(List<T> rowEList) {
+        this.rowEList = rowEList;
+    }
 }

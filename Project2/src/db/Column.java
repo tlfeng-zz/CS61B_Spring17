@@ -14,6 +14,8 @@ public class Column<T extends Comparable>  {
 
     public Column(String name, String type) {
         colEList = new ArrayList<>();
+        this.name = name;
+        this.type = type;
     }
 
     public String getName() {
