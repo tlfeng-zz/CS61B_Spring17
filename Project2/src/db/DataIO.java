@@ -1,9 +1,6 @@
 package db;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +20,7 @@ public class DataIO<T> {
         // print the content
         for(int i=0; i<tbl.getRowNum(); i++) {
             for(int j=0; j<tbl.getColNum(); j++) {
-                sb.append(tbl.getRowList().get(i).rowEList.get(j));
+                sb.append(tbl.getRowList().get(i).getRowEList().get(j));
                 if (j<tbl.getColNum()-1)
                     sb.append(",");
             }
@@ -107,4 +104,58 @@ public class DataIO<T> {
 
         return tbl;
     }
+
+    private static boolean createTblFile(String tblName) throws IOException {
+        boolean flag = false;
+        String filenameTemp = "/Users/ftl/"+tblName+".txt";
+        File filename = new File(filenameTemp);
+        if (!filename.exists()) {
+            filename.createNewFile();
+            System.out.println("created");
+            flag = true;
+        }
+        return flag;
+    }
+
+    public static void store(Table tbl) {
+        FileOutputStream outStream = null;
+        BufferedOutputStream Buff = null;
+        try {
+            //createTblFile(tbl.getName());
+            outStream = new FileOutputStream(new File("/Users/ftl/"+tbl.getName()+".txt"));
+            Buff = new BufferedOutputStream(outStream);
+            long begin0 = System.currentTimeMillis();
+            // print the definition
+            for(int i=0; i<tbl.getColNum(); i++) {
+                Buff.write(tbl.getColList().get(i).getName().getBytes());
+                Buff.write(" ".getBytes());
+                Buff.write(tbl.getColList().get(i).getType().getBytes());
+                if (i<tbl.getColNum()-1)
+                    Buff.write(",".getBytes());
+            }
+            Buff.write("\n".getBytes());
+            // print the content
+            for(int i=0; i<tbl.getRowNum(); i++) {
+                for(int j=0; j<tbl.getColNum(); j++) {
+                    Buff.write(tbl.getRowList().get(i).getRowEList().get(j).toString().getBytes());
+                    if (j<tbl.getColNum()-1)
+                        Buff.write(",".getBytes());
+                }
+                Buff.write("\n".getBytes());
+            }
+
+            Buff.flush();
+            Buff.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+            Buff.close();
+            outStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            }
+        }
+    }
+
 }

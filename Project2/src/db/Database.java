@@ -1,11 +1,23 @@
 package db;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Database {
+    private Map<String,Table> tblMap;
+
     public Database() {
-        // YOUR CODE HERE
+        // Create a list to store tables
+        tblMap = new HashMap<>();
     }
 
-    public String transact(String query) {
-        return "YOUR CODE HERE";
+    public Map<String,Table> getTblSet() {
+        return tblMap;
+    }
+
+    public String transact(String query, Map<String,Table> tblMap) {
+        String[] queryArr = {query};
+        Parse.main(queryArr, tblMap);
+        return "Action finished.";
     }
 }

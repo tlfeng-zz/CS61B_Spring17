@@ -18,6 +18,7 @@ public class Table {
         colNum = 0;
         rowList = new ArrayList<>();
         colList = new ArrayList<>();
+        this.name = name;
     }
 
     public String getName() {
@@ -63,7 +64,7 @@ public class Table {
     public <T extends Comparable> void addRow(Row row) {
         // initialize colNum
         if(colNum == 0) {
-            colNum = row.rowEList.size();
+            colNum = row.getRowEList().size();
             for(int i=0; i<colNum; i++)
                 colList.add(new Column());
         }
@@ -72,7 +73,7 @@ public class Table {
         rowList.add(row);
         // Add row elements to column;
         for(int i=0; i<colList.size(); i++) {
-            T rowElement = (T)row.rowEList.get(row.rowEList.size()-1);
+            T rowElement = (T)row.getRowEList().get(row.getRowEList().size()-1);
             colList.get(i).getColEList().add(rowElement);
         }
 
@@ -118,11 +119,11 @@ public class Table {
             for(int i=0; i<rowNum; i++) {
                 for (int j=0; j<t2.rowNum; j++) {
                     List<T> newRowEList = new ArrayList<>();
-                    for(int k=0; k<rowList.get(i).rowEList.size(); k++) {
-                        newRowEList.add((T)rowList.get(i).rowEList.get(k));
+                    for(int k=0; k<rowList.get(i).getRowEList().size(); k++) {
+                        newRowEList.add((T)rowList.get(i).getRowEList().get(k));
                     }
-                    for(int l=0; l<t2.rowList.get(j).rowEList.size(); l++) {
-                        newRowEList.add((T)t2.rowList.get(j).rowEList.get(l));
+                    for(int l=0; l<t2.rowList.get(j).getRowEList().size(); l++) {
+                        newRowEList.add((T)t2.rowList.get(j).getRowEList().get(l));
                     }
                     // add row to table
                     Row newRow = new Row(newRowEList);
@@ -149,11 +150,16 @@ public class Table {
             }
         }
 
+        Table resultTbl = new Table("");
+
         // add new column names and types
         // add common names and types
         for (int i=0; i<commonNameList.size(); i++) {
             newNameArr[i] = commonNameList.get(i);
             newTypeArr[i] = colList.get(commonColIndex1[i]).getType();
+            // add column to new table
+            Column newCol = new Column(newNameArr[i], newTypeArr[i]);
+            resultTbl.getColList().add(newCol);
         }
         int newNameindex = commonNameList.size();
 
@@ -168,6 +174,10 @@ public class Table {
             if (flag == false) {
                 newNameArr[newNameindex] = col.getName();
                 newTypeArr[newNameindex] = col.getType();
+                // add column to new table
+                Column newCol = new Column(newNameArr[newNameindex], newTypeArr[newNameindex]);
+                resultTbl.getColList().add(newCol);
+
                 newNameindex++;
             }
 
@@ -182,12 +192,14 @@ public class Table {
             if (flag == false) {
                 newNameArr[newNameindex] = col.getName();
                 newTypeArr[newNameindex] = col.getType();
+                // add column to new table
+                Column newCol = new Column(newNameArr[newNameindex], newTypeArr[newNameindex]);
+                resultTbl.getColList().add(newCol);
+
                 newNameindex++;
             }
 
         }
-
-        Table resultTbl = new Table("");
 
         // nature join -- nested loop join
         for(int i=0; i<rowNum; i++) {
@@ -196,8 +208,8 @@ public class Table {
                 boolean matchSign = true;
                 for(int k=0; k<commonNameList.size(); k++) {
                     // match the join condition
-                    if (! rowList.get(i).rowEList.get(commonColIndex1[k])
-                            .equals(t2.rowList.get(j).rowEList.get(commonColIndex2[k]))) {
+                    if (! rowList.get(i).getRowEList().get(commonColIndex1[k])
+                            .equals(t2.rowList.get(j).getRowEList().get(commonColIndex2[k]))) {
                         matchSign = false;
                     }
                 }
@@ -207,7 +219,7 @@ public class Table {
                     List<Object> newRowEList = new ArrayList<>();
                     // put common column in
                     for(int k=0; k<commonNameList.size(); k++) {
-                        newRowEList.add(rowList.get(i).rowEList.get(commonColIndex1[k]));
+                        newRowEList.add(rowList.get(i).getRowEList().get(commonColIndex1[k]));
                     }
                     // put other in table1
                     for (int l = 0; l < colNum; l++) {
@@ -218,7 +230,7 @@ public class Table {
                             }
                         }
                             if (commonSign == false) {
-                                newRowEList.add(rowList.get(i).rowEList.get(l));
+                                newRowEList.add(rowList.get(i).getRowEList().get(l));
                             }
                     }
                     // put other in table2
@@ -230,7 +242,7 @@ public class Table {
                             }
                         }
                             if (commonSign == false) {
-                                newRowEList.add(t2.rowList.get(j).rowEList.get(l));
+                                newRowEList.add(t2.rowList.get(j).getRowEList().get(l));
                             }
                     }
 
