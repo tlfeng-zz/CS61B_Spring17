@@ -185,8 +185,11 @@ public class Parse {
             if (aoExprs.length == 2) {
                 String[] operands = {aoExprs[0], aoExprs[1].split("as")[0]};
                 String newColName = aoExprs[1].split("as")[1];
-                //System.out.println("'"+operands[0]+"','"+operands[1]+"','"+newColName+"'");
-                Table newTbl = CRD.selectwithExprs(tblMap.get(tables), operands, newColName);
+                // judge the operator
+                String arOp = judgeContainsStr(exprs);
+                //System.out.println("'"+operands[0]+"','"+operands[1]+"','"+arOp+"','"+newColName+"'");
+                Table newTbl = CRD.selectwithExprs(tblMap.get(tables), operands, arOp, newColName);
+                System.out.println(DataIO.print(newTbl));
             }
             //when there is no Arithmetic Operators
             // select <column names> from <table names>, without <conditions>
@@ -205,8 +208,53 @@ public class Parse {
         }
         // select <column names> from <table> where <conditions>
         else {
-
+            // when there is a Comparison Operator
+            // filter all the space
+            exprs = exprs.replaceAll("\\s*", "");
+            String[] coConds = conds.split("(==|[<>]=?|!=)");
+            if (coConds.length == 2) {
+                String[] operands = {coConds[0], coConds[1]};
+                // judge the operator
+                String coOp = judgeComparisonOp(conds);
+                //System.out.println("'"+operands[0]+"','"+operands[1]+"','"+coOp+"'");
+                Table newTbl = CRD.selectwithConds(tblMap.get(tables), operands, coOp);
+                System.out.println(DataIO.print(newTbl));
+            }
         }
 
+    }
+
+    /* Parse the operator */
+    public static String judgeContainsStr(String str) {
+        String regex1=".*[+].*";
+        Matcher m1 = Pattern.compile(regex1).matcher(str);
+
+        String regex2=".*[-].*";
+        Matcher m2 = Pattern.compile(regex2).matcher(str);
+
+        String regex3=".*[*].*";
+        Matcher m3 = Pattern.compile(regex3).matcher(str);
+
+        String regex4=".*[/].*";
+        Matcher m4 = Pattern.compile(regex4).matcher(str);
+
+        if (m1.matches())
+            return "plus";
+        else if (m2.matches())
+            return "minus";
+        else if (m3.matches())
+            return "multiply";
+        else if (m4.matches())
+            return "devide";
+        else
+            return null;
+    }
+
+    /* Parse the operator */
+    public static String judgeComparisonOp(String str) {
+        Pattern p=Pattern.compile("(==|[<>]=?|!=)");
+        Matcher m=p.matcher(str);
+        m.find();
+        return (m.group());
     }
 }
